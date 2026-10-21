@@ -190,3 +190,50 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Kurio catalog price range */
+
+.kurio-range {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 20px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.kurio-range::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--background);
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.kurio-range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--background);
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.kurio-range:focus-visible {
+  outline: none;
+}
+
+.kurio-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.kurio-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
