@@ -136,11 +136,11 @@ export function HeroCarousel() {
 
           {/* Conteúdo à esquerda — MOBILE */}
           <div className="absolute inset-y-0 left-0 z-20 flex w-[59%] min-w-0 flex-col items-start px-4 pt-4">
-            <p className="font-mono !text-[10px] !font-semibold !leading-[14px] text-[#F2E6D6]">
+            <p className="font-sans! !text-[10px] !font-semibold !leading-[14px] text-[#F2E6D6]">
               {activeSlide.eyebrow}
             </p>
 
-            <h1 className="mt-3 w-full max-w-full font-mono !text-[15px] !font-bold !leading-[20px] !tracking-normal text-[#F2E6D6]">
+            <h1 className="mt-3 w-full max-w-full font-sans! !text-[15px] !font-bold !leading-[20px] !tracking-normal text-[#F2E6D6]">
               {activeSlide.id === "future" ? (
                 <>
                   <span className="block">SEJA DONO DA</span>
@@ -155,7 +155,7 @@ export function HeroCarousel() {
               )}
             </h1>
 
-            <p className="mt-3 w-full max-w-[175px] font-mono !text-[10px] !leading-[15px] !tracking-normal text-[#D1AF8E]">
+            <p className="mt-3 w-full max-w-[175px] font-sans! !text-[10px] !leading-[15px] !tracking-normal text-[#D1AF8E]">
               {activeSlide.id === "future"
                 ? "Descubra NFTs selecionados de criadores do mundo todo."
                 : activeSlide.description}
@@ -164,7 +164,7 @@ export function HeroCarousel() {
             <a
               href={activeSlide.href}
               onPointerDown={(event) => event.stopPropagation()}
-              className="mt-auto mb-7 inline-flex items-center gap-2 font-mono !text-[11px] !font-bold !leading-[15px] text-kurio-primary"
+              className="mt-auto mb-7 inline-flex items-center gap-2 font-sans! !text-[11px] !font-bold !leading-[15px] text-kurio-primary"
             >
               {activeSlide.buttonLabel}
 
@@ -264,7 +264,7 @@ export function HeroCarousel() {
             }}
           >
             <p
-              className="mb-6 font-mono text-[12px] leading-[16px] tracking-[3px]"
+              className="mb-6 font-sans! text-[12px] leading-[16px] tracking-[3px]"
               style={{ color: "#AA947F" }}
             >
               {activeSlide.eyebrow.toUpperCase()}
@@ -272,7 +272,7 @@ export function HeroCarousel() {
 
             <h1
               className={[
-                "w-full max-w-[700px] font-mono font-bold uppercase",
+                "w-full max-w-[700px] font-sans! font-bold uppercase",
                 "text-[clamp(30px,4vw,48px)]",
                 "leading-[1.15] tracking-[1.2px]",
               ].join(" ")}
@@ -298,7 +298,7 @@ export function HeroCarousel() {
             </h1>
 
             <p
-              className="mt-6 w-full max-w-[590px] font-mono text-[14px] leading-[22px] tracking-normal"
+              className="mt-6 w-full max-w-[590px] font-sans! text-[14px] leading-[22px] tracking-normal"
               style={{ color: "#AA947F" }}
             >
               {activeSlide.description}
@@ -311,7 +311,7 @@ export function HeroCarousel() {
                 "mt-8 inline-flex h-[40px] min-w-[139px]",
                 "items-center justify-center gap-3",
                 "rounded-[7px] bg-kurio-primary px-5",
-                "font-mono text-[12px] font-bold",
+                "font-sans! text-[12px] font-bold",
                 "leading-[16px] tracking-[1.2px]",
                 "text-kurio-ink transition-colors",
                 "hover:bg-kurio-primary-light",
@@ -392,7 +392,7 @@ export function HeroCarousel() {
               aria-hidden="true"
               className="pointer-events-none absolute -z-10"
               style={{
-                inset: "-220px",
+                inset: "-220px 0",
                 background:
                   "radial-gradient(ellipse at center, rgba(219, 145, 82, 0.18) 0%, rgba(219, 145, 82, 0.10) 28%, rgba(219, 145, 82, 0.04) 48%, transparent 72%)",
                 filter: "blur(65px)",

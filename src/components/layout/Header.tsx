@@ -102,7 +102,7 @@ export function Header() {
   return (
     <header
       className={[
-        "sticky top-0 z-50 w-full",
+        "w-full",
         "border-b border-kurio-border/60",
         "bg-background/75",
         "backdrop-blur-xl",

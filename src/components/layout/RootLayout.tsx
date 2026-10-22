@@ -23,8 +23,8 @@ export function RootLayout() {
       <div
         className={
           hasMobilePurchaseSheet
-            ? "hidden md:block"
-            : ""
+            ? "sticky top-0 z-50 hidden md:block"
+            : "sticky top-0 z-50"
         }
       >
         <Header />
