@@ -1,7 +1,6 @@
-
 import type { ChangeEvent } from "react"
 
-import { type CollectorFormValues } from "@/domain/collector"
+import type { CollectorFormValues } from "@/domain/collector"
 
 type CollectorFormProps = {
   values: CollectorFormValues
@@ -10,7 +9,7 @@ type CollectorFormProps = {
 }
 
 const inputClass =
-  "h-10 w-full min-w-0 rounded-sm border border-kurio-border bg-transparent px-3 text-xs text-foreground outline-none placeholder:text-kurio-secondary focus:border-kurio-primary"
+  "h-11 w-full min-w-0 rounded-md border border-[#493025] bg-[#241612] px-3 text-xs text-foreground outline-none placeholder:text-kurio-secondary transition-colors focus:border-kurio-primary"
 
 const labelClass = "mb-2 block text-xs text-foreground"
 
@@ -36,7 +35,7 @@ export function CollectorForm({
 
   return (
     <section className="min-w-0 font-mono">
-      <h1 className="mb-5 text-sm font-bold text-foreground">
+      <h1 className="!mb-6 !text-base !font-bold !leading-6 !tracking-normal text-foreground">
         Perfil do colecionador
       </h1>
 
@@ -125,8 +124,16 @@ export function CollectorForm({
             className={inputClass}
             value={values.walletAddress}
             onChange={handleTextChange("walletAddress")}
-            placeholder={values.network === "solana" ? "Endereço Solana (base58)" : "Endereço 0x da carteira"}
-            pattern={values.network === "solana" ? "[1-9A-HJ-NP-Za-km-z]{32,44}" : "0x[a-fA-F0-9]{40}"}
+            placeholder={
+              values.network === "solana"
+                ? "Endereço Solana (base58)"
+                : "Endereço 0x da carteira"
+            }
+            pattern={
+              values.network === "solana"
+                ? "[1-9A-HJ-NP-Za-km-z]{32,44}"
+                : "0x[a-fA-F0-9]{40}"
+            }
             title="Informe um endereço válido para a rede selecionada."
             required
             spellCheck={false}
@@ -143,7 +150,11 @@ export function CollectorForm({
             value={values.secondaryWallet}
             onChange={handleTextChange("secondaryWallet")}
             placeholder="Outro endereço da mesma rede"
-            pattern={values.network === "solana" ? "[1-9A-HJ-NP-Za-km-z]{32,44}" : "0x[a-fA-F0-9]{40}"}
+            pattern={
+              values.network === "solana"
+                ? "[1-9A-HJ-NP-Za-km-z]{32,44}"
+                : "0x[a-fA-F0-9]{40}"
+            }
             title="Informe um endereço válido para a rede selecionada."
             spellCheck={false}
           />
@@ -248,7 +259,7 @@ export function CollectorForm({
             onChange={handleTextChange("notes")}
             rows={6}
             maxLength={500}
-            className="w-full resize-y rounded-sm border border-kurio-border bg-transparent p-3 text-xs text-foreground outline-none focus:border-kurio-primary"
+            className="w-full resize-y rounded-md border border-[#493025] bg-[#241612] p-3 text-xs text-foreground outline-none transition-colors focus:border-kurio-primary"
           />
         </div>
       </form>

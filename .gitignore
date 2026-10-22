@@ -25,3 +25,8 @@ dist-ssr
 
 # Local realtime command snapshots
 .realtime/
+
+# Playwright and generated reports
+playwright-report/
+test-results/
+reports/

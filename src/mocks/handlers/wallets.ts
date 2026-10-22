@@ -1,5 +1,5 @@
 import { http } from 'msw'
-import { account } from '../data/database'
+import { account, validSession } from '../data/database'
 import { emptyWallet } from '../../domain/wallet'
 import { validEmail, validWalletAddress } from '../../domain/validation'
 import type { Wallet } from '../../domain/api'
@@ -21,8 +21,9 @@ function validate(input: Record<string, unknown>, previous?: Wallet): Wallet {
   return wallet
 }
 export const walletHandlers = [
-  http.get('/api/wallets', () => respond(false, db => account(db).wallets)),
+  http.get('/api/wallets', () => respond(false, db => { requireValue(validSession(db), 'Sessão expirada. Entre novamente.', 401); return account(db).wallets })),
   http.post('/api/wallets', ({ request }) => respond(true, async db => {
+    requireValue(validSession(db), 'Sessão expirada. Entre novamente.', 401)
     const wallet = validate(await body(request))
     const wallets = account(db).wallets
     requireValue(!wallets.some(item => item.network === wallet.network && (wallet.network === 'solana' ? item.address === wallet.address : item.address.toLowerCase() === wallet.address.toLowerCase())), 'Carteira já cadastrada.', 409)
@@ -32,6 +33,7 @@ export const walletHandlers = [
     return wallet
   }, 201)),
   http.patch('/api/wallets/:id', ({ request, params }) => respond(true, async db => {
+    requireValue(validSession(db), 'Sessão expirada. Entre novamente.', 401)
     const wallets = account(db).wallets
     const index = wallets.findIndex(item => item.id === params.id)
     requireValue(index >= 0, 'Carteira não encontrada.', 404)
@@ -43,6 +45,7 @@ export const walletHandlers = [
     return wallet
   })),
   http.delete('/api/wallets/:id', ({ params }) => respond(true, db => {
+    requireValue(validSession(db), 'Sessão expirada. Entre novamente.', 401)
     const data = account(db)
     requireValue(data.wallets.some(item => item.id === params.id), 'Carteira não encontrada.', 404)
     data.wallets = data.wallets.filter(item => item.id !== params.id)

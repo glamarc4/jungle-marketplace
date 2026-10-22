@@ -1,3 +1,4 @@
+import { toMoneyTransport } from './money-transport'
 import type { OrderStatus } from "../realtime/contracts"
 import type { Nft } from '../data/mock-nfts'
 import type { CartItem } from './cart'
@@ -24,5 +25,5 @@ export type NftList = {
   facets: { collections: Record<string, number>; networks: Record<string, number> }
 }
 export function cartSignature(cart: Cart) {
-  return JSON.stringify({ items: cart.items.map(({ key, quantity, unitPriceMicroEth }) => ({ key, quantity, unitPriceMicroEth })), coupon: cart.coupon })
+  return JSON.stringify(toMoneyTransport({ items: cart.items.map(({ key, quantity, unitPriceMicroEth }) => ({ key, quantity, unitPriceMicroEth })), coupon: cart.coupon }))
 }

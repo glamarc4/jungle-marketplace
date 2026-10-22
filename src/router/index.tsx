@@ -1,3 +1,4 @@
+import { validateCatalogSearch } from './catalog'
 import { requireCheckoutSession, validateAuthSearch, validateOrderSearch } from "./auth"
 import { OrderConfirmationPage } from "@/pages/OrderConfirmationPage"
 import { RequestState } from "@/components/RequestState"
@@ -31,12 +32,14 @@ const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: HomePage,
+  validateSearch: validateCatalogSearch,
 })
 
 const marketplaceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/mercado",
   component: HomePage,
+  validateSearch: validateCatalogSearch,
 })
 
 
@@ -89,12 +92,14 @@ const profileRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/perfil",
   component: ProfilePage,
+  beforeLoad: requireCheckoutSession,
 })
 
 const walletsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/carteiras",
   component: WalletsPage,
+  beforeLoad: requireCheckoutSession,
 })
 
 const routeTree = rootRoute.addChildren([

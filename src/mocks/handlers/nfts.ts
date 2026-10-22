@@ -1,16 +1,21 @@
+import { ethToInteger } from '../../domain/money-transport'
 import { availability } from '../data/realtime'
 import { respond, ApiError } from './http'
 import { http } from 'msw'
 import { nfts, getNft } from '../data/nfts'
 import { COLLECTIONS, NETWORKS } from '../../data/mock-nfts'
 
+function price(value: string | null) {
+  try { return ethToInteger(value, 2) } catch { throw new ApiError(400, 'Preço ETH inválido.') }
+}
+
 export const nftHandlers = [
   http.get('/api/nfts', ({ request }) => respond(false, db => {
     const params = new URL(request.url).searchParams
     const page = Number(params.get('page') ?? 1)
     const size = Number(params.get('pageSize') ?? 9)
-    const min = Number(params.get('minPrice') ?? 0)
-    const max = Number(params.get('maxPrice') ?? Number.MAX_SAFE_INTEGER)
+    const min = params.has('minPriceEth') ? price(params.get('minPriceEth')) : Number(params.get('minPrice') ?? 0)
+    const max = params.has('maxPriceEth') ? price(params.get('maxPriceEth')) : Number(params.get('maxPrice') ?? Number.MAX_SAFE_INTEGER)
     const sort = params.get('sort') ?? 'recent'
     const tab = params.get('tab') ?? 'all'
     if (!Number.isInteger(page) || page < 1 || !Number.isInteger(size) || size < 1 || size > 100 || !Number.isSafeInteger(min) || !Number.isSafeInteger(max) || min < 0 || min > max || !['recent', 'price-asc', 'price-desc', 'name'].includes(sort) || !['all', 'new', 'trending'].includes(tab)) throw new ApiError(400, 'Filtros ou paginação inválidos.')

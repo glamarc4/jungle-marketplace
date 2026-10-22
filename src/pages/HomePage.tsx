@@ -7,9 +7,19 @@ import { MintJournal } from "@/components/home/MintJournal"
 export function HomePage() {
   return (
     <>
+      {/* Busca mobile antes do Hero */}
+      <CatalogSection mode="mobile-toolbar" />
+
+      {/* Banner */}
       <HeroCarousel />
-      <CatalogSection />
+
+      {/* Catálogo */}
+      <CatalogSection mode="catalog" />
+
+      {/* Conteúdo editorial */}
       <EditorialBanners />
+
+      {/* Journal */}
       <MintJournal />
     </>
   )

@@ -2,12 +2,13 @@
 import type { ComponentProps } from "react"
 import type { MonkeyArtwork } from "@/components/home/MonkeyArtwork"
 
+import type { Availability, NftEdition } from "../realtime/contracts"
+
+export type { NftEdition } from "../realtime/contracts"
+
 export type NftArtworkVariant = ComponentProps<
   typeof MonkeyArtwork
 >["variant"]
-
-import type { Availability, NftEdition } from "../realtime/contracts"
-export type { NftEdition } from "../realtime/contracts"
 
 export type NftDetail = {
   availability?: Availability
@@ -32,12 +33,25 @@ export type RelatedNft = {
   artwork: NftArtworkVariant
 }
 
+/**
+ * A imagem principal do detalhe deve ser a mesma
+ * utilizada no card do NFT.
+ *
+ * Por enquanto, repetimos a imagem principal nas
+ * quatro miniaturas, pois temos um arquivo por macaco.
+ */
+export function createNftGallery(
+  artwork: NftArtworkVariant,
+): NftArtworkVariant[] {
+  return Array.from({ length: 4 }, () => artwork)
+}
+
 export const emeraldApe: NftDetail = {
   id: "42",
   title: "Emerald Ape #042",
   price: "1.19",
-  artwork: "emerald",
-  gallery: ["emerald", "emerald", "emerald", "emerald"],
+  artwork: "gold",
+  gallery: createNftGallery("gold"),
   description:
     "Um colecionável digital finalizado à mão da coleção Kurio Editions, verificado na Ethereum, com arte desbloqueável e acesso para colecionadores.",
   tokenId: "#0042",
@@ -84,6 +98,7 @@ export const relatedNfts: RelatedNft[] = [
 export const nftDetailsById: Record<string, NftDetail> = {
   "42": emeraldApe,
   "042": emeraldApe,
+
   ...Object.fromEntries(
     relatedNfts.map((nft) => [
       nft.id,
@@ -93,12 +108,7 @@ export const nftDetailsById: Record<string, NftDetail> = {
         title: nft.title,
         price: nft.price,
         artwork: nft.artwork,
-        gallery: [
-          nft.artwork,
-          nft.artwork,
-          nft.artwork,
-          nft.artwork,
-        ],
+        gallery: createNftGallery(nft.artwork),
         tokenId: `#${nft.id.padStart(4, "0")}`,
       },
     ]),

@@ -20,7 +20,7 @@ export const NETWORKS = [
 
 export type Collection = (typeof COLLECTIONS)[number]
 export type Network = (typeof NETWORKS)[number]
-export type ArtworkVariant = "emerald" | "violet" | "gold"
+export type ArtworkVariant = "emerald" | "violet" | "gold" 
 
 export type Nft = {
   availability?: Availability
@@ -50,7 +50,7 @@ export function formatEth(priceCents: number): string {
 type NftSeed = Omit<Nft, "createdAt" | "popularity">
 
 const seeds: NftSeed[] = [
-  { id: "042", name: "Emerald Ape #042", collection: "Arte digital", network: "Ethereum", priceCents: 119, artwork: "emerald", featured: true },
+  { id: "042", name: "Emerald Ape #042", collection: "Arte digital", network: "Ethereum", priceCents: 119, artwork: "gold", featured: true },
   { id: "009", name: "Sage Nomad #009", collection: "Arte digital", network: "Polygon", priceCents: 169, artwork: "violet" },
   { id: "552", name: "Neon Vessel #552", collection: "Arte 3D", network: "Ethereum", priceCents: 199, previousPriceCents: 229, artwork: "emerald" },
   { id: "118", name: "Cosmic Bloom #118", collection: "Generativa", network: "Solana", priceCents: 129, artwork: "violet" },

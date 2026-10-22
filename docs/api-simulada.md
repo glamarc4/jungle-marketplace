@@ -14,7 +14,7 @@ As rotas, layout, cores, tipografia, artworks e Footer foram mantidos. Foram adi
 
 ## Persistência e credenciais
 
-A chave `kurio:api:v1` no localStorage contém a versão da base, contas, sessão, carrinho, cupom, carteiras, pedidos e registros de idempotência. Perfil e carteiras pertencem à conta atual ou ao visitante `guest`; novos pedidos exigem uma conta autenticada. O carrinho é compartilhado no navegador, inclusive ao entrar/sair. Dados de visitante não são automaticamente transferidos para uma nova conta.
+A chave `kurio:api:v1` no localStorage contém a versão da base, contas, sessão, carrinho, cupom, carteiras, pedidos e registros de idempotência. Perfil, carteiras, favoritos e pedidos exigem uma conta autenticada. Dados legados em `guest` permanecem armazenados, mas não são expostos por essas APIs. O carrinho é compartilhado no navegador, inclusive ao entrar/sair. Dados de visitante não são automaticamente transferidos para uma nova conta.
 
 A primeira leitura migra a sessão antiga, perfil/carteiras da sessão ativa e carrinho antigo. Itens inválidos são descartados e aliases duplicados são reunidos, respeitando o limite de 99. A antiga chave de sessão é removida após persistir a base nova; os demais dados legados permanecem disponíveis como cópia. Sem carrinho legado, são mantidas as três linhas iniciais da demonstração. Perfis de outras sessões legadas não são importados automaticamente.
 
@@ -26,7 +26,11 @@ Cada operação lê uma cópia atual da base. Uma fila serializa acessos na aba;
 
 ## Dinheiro
 
-Preços e valores JSON usam inteiros em **microETH**: 1 ETH = 1.000.000 microETH. Os centésimos de ETH dos mocks são convertidos exatamente. Reduções, desconto e total usam `bigint` internamente; a resposta só converte para `number` depois de verificar `Number.MAX_SAFE_INTEGER`.
+O contrato REST usa **strings decimais em ETH**: `priceEth`/`previousPriceEth` no catálogo, `unitPriceEth` nos itens e `subtotalEth`, `discountEth`, `networkFeeEth`, `totalEth` no carrinho e pedidos. O detalhe já usa `price` como string ETH. Exemplo: taxa `"0.016"`, preço `"1.19"`; quantidades continuam inteiras.
+
+`src/domain/money-transport.ts` define `MoneyTransport<T>` e os codecs usados na resposta MSW e no interceptor Axios. O transporte é convertido exatamente com `BigInt` antes de chegar ao Query. Modelos internos, componentes e snapshots persistidos continuam em inteiros seguros microETH (centésimos no catálogo), preservando bases já salvas. `cartSignature` também serializa preços ETH. Não há divisão ou multiplicação em ponto flutuante na conversão.
+
+O domínio atual aceita seis casas decimais nos totais/itens e duas nos preços/filtros do catálogo, até `Number.MAX_SAFE_INTEGER` unidades internas. Casas adicionais zero são aceitas; precisão excedente não nula e overflow são rejeitados, nunca arredondados silenciosamente. Não há suporte a valores arbitrários de 18 casas wei nesta rodada.
 
 - Subtotal: soma de preço unitário × quantidade.
 - Cupom `KURIO10`: 10% exatos. Os preços existentes são múltiplos de 10.000 microETH; não é necessário arredondar. Valores que exigiriam arredondamento são rejeitados.
@@ -39,7 +43,7 @@ Carrinho e resumo do checkout usam os totais calculados pela API. A confirmaçã
 
 Todas as URLs abaixo começam com `/api`. Respostas de erro usam `{ "message": "mensagem em português" }`.
 
-- `GET /nfts`: `page` (1), `pageSize` (9, máximo 100), `search`, `collection`, `network`, `minPrice`/`maxPrice` (centésimos de ETH), `sort` (`recent`, `price-asc`, `price-desc`, `name`), `tab` (`all`, `new`, `trending`). Retorna `items`, `total`, `page`, `totalPages` e contagens de facetas. A aba de novos preserva o corte original de 13/10/2026.
+- `GET /nfts`: `page` (1), `pageSize` (9, máximo 100), `search`, `collection`, `network`, `minPriceEth`/`maxPriceEth` (strings decimais ETH; parâmetros antigos `minPrice`/`maxPrice` continuam aceitos para compatibilidade), `sort` (`recent`, `price-asc`, `price-desc`, `name`), `tab` (`all`, `new`, `trending`). Retorna `items`, `total`, `page`, `totalPages` e contagens de facetas. A aba de novos preserva o corte original de 13/10/2026.
 - `GET /nfts/:id`: detalhe, galeria, edições e informações; 404 quando ausente.
 - `POST /auth/register`: `{ email, username, password }`; cria conta e sessão (201), 400 para campos inválidos e 409 para e-mail já cadastrado.
 - `POST /auth/login`: `{ email, password }`; 401 para credenciais inválidas.
@@ -50,9 +54,9 @@ Todas as URLs abaixo começam com `/api`. Respostas de erro usam `{ "message": "
 - `PATCH /cart/items/:id`: `{ quantity }`; o identificador é a chave da linha codificada na URL, por exemplo `encodeURIComponent('042:1/50')`.
 - `DELETE /cart/items/:id`: remove a linha e retorna o carrinho atualizado.
 - `PATCH /cart`: `{ coupon: 'KURIO10' }` ou `{ coupon: null }`. Endpoint adicional necessário para manter o desconto entre telas.
-- `GET /profile`: perfil da conta atual/visitante.
+- `GET /profile`: perfil da conta autenticada; 401 sem sessão válida.
 - `PATCH /profile`: alterações dos campos existentes; opcionais `currentPassword` e `newPassword`. E-mail autenticado também é atualizado na sessão e no login; conflitos retornam 409.
-- `GET /wallets`: carteiras salvas.
+- `GET /wallets`: carteiras da conta autenticada; todas as operações de perfil/carteiras retornam 401 sem sessão válida.
 - `POST /wallets`: dados do formulário e `primary`; retorna carteira com UUID (201).
 - `PATCH /wallets/:id`: atualiza campos ou torna a carteira principal. Só uma carteira é principal.
 - `DELETE /wallets/:id`: remove carteira; se necessário, promove a primeira restante.
@@ -175,7 +179,7 @@ A persistência dos pedidos já existia em `accounts[userId].orders` dentro de `
 
 O checkout e o handler de criação antes admitiam `guest`, sem autorização. Agora o MSW verifica se a sessão corresponde a um usuário existente (ID e e-mail). `POST /api/orders` retorna 401 antes de ler o corpo ou reapresentar pedidos por idempotência quando não há sessão válida. As leituras de pedidos também exigem sessão e continuam isoladas por conta. `/auth/me` retorna `null` para sessão inválida, preservando sessões demo legadas válidas.
 
-A proteção de rota usa `beforeLoad` e reconsulta a sessão mesmo quando o Header possui cache. Somente checkout e confirmação são destinos permitidos após autenticar; login/cadastro normais ainda levam ao perfil. Um 401 recebido durante a submissão também encaminha ao login, sem limpar o carrinho.
+A proteção de rota usa `beforeLoad` e reconsulta a sessão mesmo quando o Header possui cache. Checkout, confirmação, perfil e carteiras são destinos permitidos após autenticar; login/cadastro normais ainda levam ao perfil. Um 401 recebido durante a submissão também encaminha ao login, sem limpar o carrinho.
 
 Após a criação, a aplicação navega para `/pedido/confirmacao?orderId=<ID retornado>`. O cache é preenchido com o pedido da resposta. Após F5, a página consulta `GET /api/orders/:id`, usando o snapshot persistido. Sem `orderId`, apresenta uma lista simples obtida de `GET /api/orders`; cada entrada reabre o modal existente. Nenhuma leitura ou montagem da página chama `POST /api/orders`. O componente e as dimensões responsivas do modal não foram alterados nesta correção.
 
@@ -203,3 +207,11 @@ Arquivos desta correção (em relação ao início deste pedido):
 - **(ALTERADO)** `docs/api-simulada.md`
 
 Referência: [rotas autenticadas no TanStack Router](https://tanstack.com/router/latest/docs/guide/authenticated-routes).
+
+
+## Correções P0 — 22/10/2026
+
+- Favoritos: `GET /favorites`, `PUT /favorites/:id`, `DELETE /favorites/:id`, respostas `string[]` de IDs. Exigem sessão válida e header `X-Account-Id` correspondente. Persistência em `accounts[userId].favorites`; chaves globais legadas `kurio:favorite:*` não são lidas nem atribuídas a contas porque não identificam o proprietário. Query usa `['account', 'favorites', userId]`; atualização otimista reverte em falha, e callbacks só atualizam cache se a conta original ainda estiver ativa. Logout/troca cancelam consultas privadas e removem o cache; o provider Socket.IO existente libera a sessão anterior.
+- Novos logins/cadastros criam validade de 30 minutos em `sessionExpiresAt`, persistida na base. Sessões legadas sem prazo mantêm compatibilidade até novo login. Guards revalidam sessão no acesso a perfil/carteiras e preservam o destino no login. A sessão é consultada a cada 15 segundos enquanto ativa; sua expiração remove cache privado e invalida as rotas protegidas de perfil/carteiras. Nenhuma operação privada dessas APIs aceita sessão expirada.
+- Catálogo: `/` e `/mercado` validam busca, coleção, rede, faixa de preço, aba, ordenação e página. O estado aplicado vem da URL, com histórico por interação; controles de preço mantêm apenas rascunho até Aplicar. Filtro, busca, aba e ordenação reiniciam página 1. Axios envia filtros monetários ETH, preservando a escala dos controles existentes.
+- Evidências desta rodada: [relatório P0](../reports/p0-fixes/README.md). As seções de resultados anteriores acima são históricas; não descrevem a cobertura atual.

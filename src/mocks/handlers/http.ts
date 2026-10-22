@@ -1,3 +1,4 @@
+import { toMoneyTransport } from '../../domain/money-transport'
 import { HttpResponse, type JsonBodyType } from 'msw'
 import { transaction, type Database } from '../data/database'
 
@@ -21,6 +22,6 @@ export function textField(value: unknown, label: string, max = 200) {
 }
 export function respond(write: boolean, action: (db: Database) => JsonBodyType | Promise<JsonBodyType>, status = 200) {
   return transaction(write, action)
-    .then(data => HttpResponse.json(data, { status }))
+    .then(data => HttpResponse.json(toMoneyTransport(data), { status }))
     .catch((error: unknown) => HttpResponse.json({ message: error instanceof ApiError ? error.message : 'Não foi possível acessar a base local. Verifique o armazenamento do navegador.' }, { status: error instanceof ApiError ? error.status : 503 }))
 }

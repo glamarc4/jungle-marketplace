@@ -1,11 +1,16 @@
 
 import { useState, type FormEvent } from "react"
 import {
-  BriefcaseBusiness,
-  Camera,
-  Play,
+  BellRing,
+  ShieldCheck,
   UsersRound,
 } from "lucide-react"
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaYoutube,
+} from "react-icons/fa"
 
 import {
   footerBenefits,
@@ -17,21 +22,27 @@ import {
 const socialLinks = [
   {
     label: "Facebook",
-    Icon: UsersRound,
+    Icon: FaFacebookF,
   },
   {
     label: "Instagram",
-    Icon: Camera,
+    Icon: FaInstagram,
   },
   {
     label: "LinkedIn",
-    Icon: BriefcaseBusiness,
+    Icon: FaLinkedinIn,
   },
   {
     label: "YouTube",
-    Icon: Play,
+    Icon: FaYoutube,
   },
 ] as const
+
+const benefitIcons = {
+  "wallet-security": ShieldCheck,
+  creators: UsersRound,
+  launches: BellRing,
+}
 
 function NewsletterForm() {
   const [email, setEmail] = useState("")
@@ -115,28 +126,38 @@ function NewsletterForm() {
 function FooterBenefits() {
   return (
     <div className="bg-kurio-card">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:gap-0 lg:px-8">
-        {footerBenefits.map((benefit) => (
-          <div
-            key={benefit.id}
-            className="min-w-0 font-mono lg:border-r lg:border-kurio-primary/60 lg:px-6 lg:first:pl-0"
-          >
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 sm:px-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-0 lg:px-10 lg:py-10">
+        {footerBenefits.map((benefit) => {
+          const Icon =
+            benefitIcons[
+              benefit.id as keyof typeof benefitIcons
+            ] ?? ShieldCheck
+
+          return (
             <div
-              aria-hidden="true"
-              className="mb-4 flex size-16 items-center justify-center rounded-full bg-kurio-primary text-2xl font-bold text-kurio-ink"
+              key={benefit.id}
+              className="min-w-0 font-mono lg:border-r lg:border-kurio-primary/30 lg:px-6 lg:first:pl-0"
             >
-              {benefit.iconLetter}
+              <div
+                aria-hidden="true"
+                className="mb-4 flex size-14 items-center justify-center rounded-full bg-kurio-primary text-kurio-ink"
+              >
+                <Icon
+                  className="size-6"
+                  strokeWidth={1.8}
+                />
+              </div>
+
+              <h3 className="text-left text-sm font-bold leading-5 text-foreground">
+                {benefit.title}
+              </h3>
+
+              <p className="mt-3 max-w-[260px] text-justify font-mono text-xs leading-6 text-kurio-text-secondary">
+                {benefit.description}
+              </p>
             </div>
-
-            <h3 className="text-sm font-bold leading-5 text-foreground">
-              {benefit.title}
-            </h3>
-
-            <p className="mt-2 max-w-[260px] text-xs leading-6 text-kurio-text-secondary">
-              {benefit.description}
-            </p>
-          </div>
-        ))}
+          )
+        })}
 
         <div className="min-w-0 font-mono lg:pl-6">
           <NewsletterForm />
@@ -149,7 +170,7 @@ function FooterBenefits() {
 function FooterIdentity() {
   return (
     <div className="bg-kurio-surface-dark">
-      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-6 font-mono text-xs text-foreground sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:items-center lg:gap-8 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-5 px-6 py-6 font-mono text-xs text-foreground sm:grid-cols-2 sm:px-8 lg:grid-cols-4 lg:items-center lg:gap-8 lg:px-10">
         <a
           href="#inicio"
           aria-label="Kurio — voltar ao início"
@@ -183,7 +204,7 @@ function FooterIdentity() {
 function FooterNavigation() {
   return (
     <div className="bg-kurio-card">
-      <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-10 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-10 px-6 py-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-4 lg:px-10">
         {footerLinkGroups.map((group) => (
           <nav
             key={group.title}
@@ -220,11 +241,11 @@ function FooterNavigation() {
                 key={label}
                 title={`${label} — link em desenvolvimento`}
                 aria-label={`${label} — indisponível`}
-                className="flex size-8 items-center justify-center rounded border border-kurio-primary text-kurio-primary"
+                className="flex size-8 items-center justify-center rounded-md border border-kurio-primary text-kurio-primary transition-colors duration-200 hover:bg-kurio-primary/10"
               >
                 <Icon
                   aria-hidden="true"
-                  className="size-4"
+                  className="size-[16px]"
                 />
               </span>
             ))}
@@ -264,9 +285,11 @@ export function Footer() {
       aria-label="Rodapé da Kurio"
       className="w-full"
     >
-      <FooterBenefits />
-      <FooterIdentity />
-      <FooterNavigation />
+      <div className="overflow-hidden rounded-[18px] border border-kurio-border-soft">
+        <FooterBenefits />
+        <FooterIdentity />
+        <FooterNavigation />
+      </div>
 
       <div className="bg-background px-4 py-5 text-center font-mono text-[11px] text-foreground/75 sm:px-6">
         © 2026 Kurio. Propriedade digital para todos.

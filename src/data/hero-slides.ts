@@ -1,4 +1,3 @@
-
 export type HeroSlide = {
   id: string
   eyebrow: string
@@ -6,7 +5,7 @@ export type HeroSlide = {
   description: string
   buttonLabel: string
   href: string
-  artwork: "emerald" | "violet" | "gold"
+  artwork: string
 }
 
 export const heroSlides: HeroSlide[] = [
@@ -15,10 +14,10 @@ export const heroSlides: HeroSlide[] = [
     eyebrow: "Bem-vindo à Kurio",
     title: "SEJA DONO DO FUTURO\nDA ARTE DIGITAL",
     description:
-      "Descubra NFTs selecionados de criadores emergentes e consagrados. Colecione arte digital rara, apoie artistas e tenha um parte da cultura da internet.",
+      "Descubra NFTs selecionados de criadores emergentes e consagrados. Colecione arte digital rara, apoie artistas e tenha uma parte da cultura da internet.",
     buttonLabel: "EXPLORAR",
     href: "#mercado",
-    artwork: "emerald",
+    artwork: "/images/nfts/macaco-marrom.png",
   },
   {
     id: "collections",
@@ -28,7 +27,7 @@ export const heroSlides: HeroSlide[] = [
       "Explore coleções especiais, conheça novos artistas e encontre a próxima peça da sua coleção digital.",
     buttonLabel: "VER COLEÇÕES",
     href: "#colecoes",
-    artwork: "violet",
+    artwork: "/images/nfts/macaco-cinza.png",
   },
   {
     id: "creators",
@@ -38,6 +37,6 @@ export const heroSlides: HeroSlide[] = [
       "Conheça artistas independentes e descubra obras digitais que contam histórias únicas.",
     buttonLabel: "CONHECER",
     href: "#criadores",
-    artwork: "gold",
+    artwork: "/images/nfts/macaco-marrom.png",
   },
 ]

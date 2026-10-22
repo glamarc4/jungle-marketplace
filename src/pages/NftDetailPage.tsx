@@ -1,5 +1,6 @@
 
-import { Link, useParams } from "@tanstack/react-router"
+import { Link, useNavigate, useParams } from "@tanstack/react-router"
+import { ChevronLeft } from "lucide-react"
 
 import { NftGallery } from "@/components/nft/NftGallery"
 import { NftPurchasePanel } from "@/components/nft/NftPurchasePanel"
@@ -10,13 +11,24 @@ import { useNft } from "@/hooks/use-api"
 import { RequestState } from "@/components/RequestState"
 
 export function NftDetailPage() {
+  const navigate = useNavigate()
+
   const { nftId } = useParams({
     from: "/nft/$nftId",
   })
 
   const query = useNft(nftId)
   const nft = query.data
-  if (query.isPending || query.isError) return <RequestState pending={query.isPending} error={query.error} retry={() => void query.refetch()} />
+
+  if (query.isPending || query.isError) {
+    return (
+      <RequestState
+        pending={query.isPending}
+        error={query.error}
+        retry={() => void query.refetch()}
+      />
+    )
+  }
 
   if (!nft) {
     return (
@@ -40,47 +52,77 @@ export function NftDetailPage() {
   }
 
   return (
-    <div className="w-full">
-      <div className="mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 lg:px-8">
+    <div className="relative w-full">
+      <div className="mx-auto max-w-7xl pb-20 pt-5 md:px-6 md:pt-6 lg:px-8">
+        {/* Navegação mobile */}
+        <div className="mb-4 flex items-center justify-between px-5 md:hidden">
+          <button
+            type="button"
+            aria-label="Voltar"
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back()
+              } else {
+                void navigate({ to: "/mercado" })
+              }
+            }}
+            className="flex size-11 items-center justify-center rounded-full border border-[#4A291D] bg-[#301C16] text-[#C8A981]"
+          >
+            <ChevronLeft size={23} strokeWidth={2}/>
+          </button>
+        </div>
+
+        {/* Breadcrumb apenas desktop */}
         <nav
           aria-label="Caminho de navegação"
-          className="mb-3 font-mono text-xs font-bold text-foreground"
+          className="mb-5 hidden items-center gap-2 font-mono text-xs font-bold md:flex"
         >
           <Link
             to="/"
-            className="transition-colors hover:text-kurio-primary"
+            className="text-foreground transition-colors hover:text-kurio-primary"
           >
             Início
           </Link>
 
-          <span className="mx-2 text-kurio-text-secondary">
+          <span aria-hidden="true" className="text-kurio-text-secondary">
             /
           </span>
 
-          <span>Detalhes do NFT</span>
+          <span
+            aria-current="page"
+            className="text-kurio-text-secondary"
+          >
+            Mercado
+          </span>
         </nav>
 
-        <div className="grid items-start gap-7 lg:grid-cols-2 lg:gap-8">
-          <NftGallery
-            key={nft.id}
-            title={nft.title}
-            images={nft.gallery}
-          />
+        {/* Galeria + informações */}
+        <div className="grid items-stretch gap-6 lg:grid-cols-2 lg:gap-8">
+          <div className="px-5 md:px-0">
+            <NftGallery
+              key={nft.id}
+              title={nft.title}
+              images={nft.gallery}
+            />
+          </div>
 
-          <NftPurchasePanel
-            key={nft.id}
-            nft={nft}
-          />
+          <div className="px-5 md:px-0">
+            <NftPurchasePanel
+              key={nft.id}
+              nft={nft}
+            />
+          </div>
         </div>
 
-        <div className="mt-16 sm:mt-20">
+        {/* Conteúdo inferior preservado */}
+        <div className="mt-16 px-5 md:mt-20 md:px-0">
           <NftInformationTabs
             key={nft.id}
             nft={nft}
           />
         </div>
 
-        <div className="mt-16 sm:mt-20">
+        <div className="mt-16 px-5 md:mt-20 md:px-0">
           <RelatedNfts
             key={nft.id}
             currentNftId={nft.id}

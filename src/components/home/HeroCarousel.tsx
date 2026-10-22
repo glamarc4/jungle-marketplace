@@ -6,7 +6,6 @@ import {
 } from "react"
 
 import { heroSlides } from "@/data/hero-slides"
-import { MonkeyArtwork } from "./MonkeyArtwork"
 
 const SWIPE_THRESHOLD = 60
 
@@ -25,16 +24,11 @@ export function HeroCarousel() {
 
   function goToSlide(index: number) {
     const total = heroSlides.length
-
-    setActiveIndex(
-      (index + total) % total
-    )
+    setActiveIndex((index + total) % total)
     setDragOffset(0)
   }
 
-  function handlePointerDown(
-    event: PointerEvent<HTMLDivElement>
-  ) {
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     if (event.pointerType === "mouse" && event.button !== 0) {
       return
     }
@@ -49,14 +43,10 @@ export function HeroCarousel() {
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
-  function handlePointerMove(
-    event: PointerEvent<HTMLDivElement>
-  ) {
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
     const start = pointerStart.current
 
-    if (!start || start.id !== event.pointerId) {
-      return
-    }
+    if (!start || start.id !== event.pointerId) return
 
     const distanceX = event.clientX - start.x
     const distanceY = event.clientY - start.y
@@ -66,14 +56,10 @@ export function HeroCarousel() {
     }
   }
 
-  function finishDrag(
-    event: PointerEvent<HTMLDivElement>
-  ) {
+  function finishDrag(event: PointerEvent<HTMLDivElement>) {
     const start = pointerStart.current
 
-    if (!start || start.id !== event.pointerId) {
-      return
-    }
+    if (!start || start.id !== event.pointerId) return
 
     const distanceX = event.clientX - start.x
 
@@ -98,6 +84,8 @@ export function HeroCarousel() {
     setDragOffset(0)
   }
 
+  const titleParts = activeSlide.title.split("\n")
+
   return (
     <section
       id="inicio"
@@ -105,16 +93,15 @@ export function HeroCarousel() {
       aria-roledescription="carrossel"
       className="w-full"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-8 lg:px-12 xl:px-[85px]">
+
+
+        {/* MOBILE: banner do Figma */}
         <div
-          className={[
-            "grid select-none items-center gap-8 cursor-default",
-            "min-h-[680px] py-8",
-            "sm:min-h-[740px]",
-            "md:h-[520px] md:min-h-0 md:grid-cols-[1.2fr_1fr] md:gap-14 md:py-10",
-            "lg:h-[580px]",
-            ].join(" ")}
+          className="relative mt-4 h-[220px] w-full select-none overflow-hidden rounded-[28px] border-kurio-border/30 md:hidden"
           style={{
+            background:
+              "linear-gradient(115deg, #6D482F 0%, #422A1E 48%, #261A14 100%)",
             touchAction: "pan-y",
           }}
           onPointerDown={handlePointerDown}
@@ -122,80 +109,305 @@ export function HeroCarousel() {
           onPointerUp={finishDrag}
           onPointerCancel={cancelDrag}
         >
-          {/* Conteúdo */}
+          {/* Círculo esquerdo */}
           <div
-            className="flex min-w-0 flex-col items-start md:h-full md:justify-center"
+            aria-hidden="true"
+            className="pointer-events-none absolute h-[248px] w-[248px] rounded-full"
             style={{
-              transform: `translateX(${Math.max(-24, Math.min(24, dragOffset * 0.12))}px)`,
+              top: "-31px",
+              left: "-80px",
+              background:
+                "linear-gradient(160.25deg, rgba(221,154,95,0.43) 22.1%, rgba(210,138,76,0.04) 87.42%)",
+            }}
+          />
+
+          {/* Círculo central */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute h-[248px] w-[248px] rounded-full"
+            style={{
+              top: "-10px",
+              left: "73px",
+              background:
+                "linear-gradient(160.25deg, rgba(221,154,95,0.37) 22.1%, rgba(210,138,76,0) 87.42%)",
+            }}
+          />
+
+
+          {/* Conteúdo à esquerda — MOBILE */}
+          <div className="absolute inset-y-0 left-0 z-20 flex w-[59%] min-w-0 flex-col items-start px-4 pt-4">
+            <p className="font-mono !text-[10px] !font-semibold !leading-[14px] text-[#F2E6D6]">
+              {activeSlide.eyebrow}
+            </p>
+
+            <h1 className="mt-3 w-full max-w-full font-mono !text-[15px] !font-bold !leading-[20px] !tracking-normal text-[#F2E6D6]">
+              {activeSlide.id === "future" ? (
+                <>
+                  <span className="block">SEJA DONO DA</span>
+                  <span className="block">CULTURA DIGITAL</span>
+                </>
+              ) : (
+                activeSlide.title.split("\n").map((part, index) => (
+                  <span key={index} className="block">
+                    {part}
+                  </span>
+                ))
+              )}
+            </h1>
+
+            <p className="mt-3 w-full max-w-[175px] font-mono !text-[10px] !leading-[15px] !tracking-normal text-[#D1AF8E]">
+              {activeSlide.id === "future"
+                ? "Descubra NFTs selecionados de criadores do mundo todo."
+                : activeSlide.description}
+            </p>
+
+            <a
+              href={activeSlide.href}
+              onPointerDown={(event) => event.stopPropagation()}
+              className="mt-auto mb-7 inline-flex items-center gap-2 font-mono !text-[11px] !font-bold !leading-[15px] text-kurio-primary"
+            >
+              {activeSlide.buttonLabel}
+
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14" />
+                <path d="m13 6 6 6-6 6" />
+              </svg>
+            </a>
+          </div>
+
+
+          {/* Imagem principal e macaco secundário */}
+          <div className="pointer-events-none absolute right-3 top-[14px] z-10 h-[164px] w-[43%]">
+            <img
+              src={activeSlide.artwork}
+              alt={`Arte em destaque: ${activeSlide.eyebrow}`}
+              draggable={false}
+              className="h-full w-full rounded-[22px] object-cover"
+            />
+
+            <img
+              src="/images/nfts/macaco-cinza.png"
+              alt="Arte em destaque: Bem-vindo à Kurio"
+              aria-hidden="true"
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
+              draggable={false}
+              className="absolute -bottom-2 -left-4 h-[62px] w-[62px] rounded-[18px] object-cover"
+            />
+          </div>
+
+          {/* Indicadores centralizados e próximos */}
+          <div
+            className="absolute bottom-2 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5"
+            role="group"
+            aria-label="Selecionar destaque"
+            onPointerDown={(event) => event.stopPropagation()}
+          >
+            {heroSlides.map((slide, index) => (
+              <button
+                key={slide.id}
+                type="button"
+                aria-label={`Ir para destaque ${index + 1}: ${slide.eyebrow}`}
+                aria-current={index === activeIndex ? "true" : undefined}
+                onClick={() => goToSlide(index)}
+                className="flex h-5 w-5 items-center justify-center focus-visible:outline-2 focus-visible:outline-kurio-primary"
+              >
+                <span
+                  className={[
+                    "h-[7px] w-[7px] rounded-full",
+                    index === activeIndex
+                      ? "bg-kurio-primary"
+                      : "bg-kurio-primary/60",
+                  ].join(" ")}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+
+        {/* DESKTOP: estrutura original preservada */}
+        <div
+          className={[
+            "hidden select-none items-center gap-10",
+            "py-12 md:grid",
+            "lg:min-h-[690px] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]",
+            "lg:justify-between lg:gap-8 lg:py-14",
+          ].join(" ")}
+          style={{ touchAction: "pan-y" }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={finishDrag}
+          onPointerCancel={cancelDrag}
+        >
+          <div
+            className="flex min-w-0 flex-col items-start text-left"
+            style={{
+              transform: `translateX(${Math.max(
+                -24,
+                Math.min(24, dragOffset * 0.12)
+              )}px)`,
               transition: isDragging
                 ? "none"
                 : "transform 250ms ease",
             }}
           >
-            <p className="mb-5 font-mono text-xs tracking-[0.12em] text-foreground sm:text-sm">
-              {activeSlide.eyebrow}
+            <p
+              className="mb-6 font-mono text-[12px] leading-[16px] tracking-[3px]"
+              style={{ color: "#AA947F" }}
+            >
+              {activeSlide.eyebrow.toUpperCase()}
             </p>
 
-            <h1 className="max-w-[650px] whitespace-pre-line font-mono text-[clamp(1.75rem,3.5vw,3.5rem)] font-bold leading-[1.2] tracking-tight text-foreground">
-              {activeSlide.title}
+            <h1
+              className={[
+                "w-full max-w-[700px] font-mono font-bold uppercase",
+                "text-[clamp(30px,4vw,48px)]",
+                "leading-[1.15] tracking-[1.2px]",
+              ].join(" ")}
+              style={{ color: "#F2E6D6" }}
+            >
+              {titleParts.map((part, index) => (
+                <span
+                  key={`${activeSlide.id}-${index}`}
+                  className="block"
+                >
+                  {index === 1 && activeSlide.id === "future" ? (
+                    <>
+                      DA{" "}
+                      <span className="text-kurio-primary">
+                        ARTE DIGITAL
+                      </span>
+                    </>
+                  ) : (
+                    part
+                  )}
+                </span>
+              ))}
             </h1>
 
-            <p className="mt-4 max-w-[540px] font-mono text-xs leading-6 text-kurio-text-secondary sm:text-sm">
+            <p
+              className="mt-6 w-full max-w-[590px] font-mono text-[14px] leading-[22px] tracking-normal"
+              style={{ color: "#AA947F" }}
+            >
               {activeSlide.description}
             </p>
 
             <a
               href={activeSlide.href}
               onPointerDown={(event) => event.stopPropagation()}
-              className="mt-7 inline-flex min-h-10 items-center justify-center rounded-md bg-kurio-primary px-7 font-mono text-xs font-bold text-kurio-ink transition-colors hover:bg-kurio-primary-light focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-kurio-primary"
+              className={[
+                "mt-8 inline-flex h-[40px] min-w-[139px]",
+                "items-center justify-center gap-3",
+                "rounded-[7px] bg-kurio-primary px-5",
+                "font-mono text-[12px] font-bold",
+                "leading-[16px] tracking-[1.2px]",
+                "text-kurio-ink transition-colors",
+                "hover:bg-kurio-primary-light",
+                "focus-visible:outline-2",
+                "focus-visible:outline-offset-4",
+                "focus-visible:outline-kurio-primary",
+              ].join(" ")}
             >
               {activeSlide.buttonLabel}
+
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14" />
+                <path d="m13 6 6 6-6 6" />
+              </svg>
             </a>
 
-            {/* Indicadores */}
             <div
-              className="mt-8 flex w-full items-center justify-center gap-0.5 md:mt-10 md:justify-end"
+              className="mt-10 flex items-center gap-2"
               role="group"
               aria-label="Selecionar destaque"
               onPointerDown={(event) => event.stopPropagation()}
             >
-              {heroSlides.map((slide, index) => (
-                <button
-                  key={slide.id}
-                  type="button"
-                  aria-label={`Ir para destaque ${index + 1}: ${slide.eyebrow}`}
-                  aria-current={
-                    index === activeIndex
-                      ? "true"
-                      : undefined
-                  }
-                  onClick={() => goToSlide(index)}
-                  className="flex size-6 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kurio-primary"
-                >
-                  <span
+              {heroSlides.map((slide, index) => {
+                const isActive = index === activeIndex
+
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    aria-label={`Ir para destaque ${index + 1}: ${slide.eyebrow}`}
+                    aria-current={isActive ? "true" : undefined}
+                    onClick={() => goToSlide(index)}
                     className={[
-                      "block size-2 rounded-full transition-all duration-200",
-                      index === activeIndex
-                        ? "scale-110 bg-kurio-primary"
-                        : "bg-kurio-primary/65 hover:bg-kurio-primary",
+                      "flex h-6 items-center justify-center",
+                      "focus-visible:outline-2",
+                      "focus-visible:outline-offset-2",
+                      "focus-visible:outline-kurio-primary",
                     ].join(" ")}
-                  />
-                </button>
-              ))}
+                  >
+                    <span
+                      className={[
+                        "block h-[6px] rounded-full",
+                        "transition-all duration-300",
+                        isActive
+                          ? "w-[24px] bg-kurio-primary"
+                          : "w-[6px] bg-kurio-primary/40 hover:bg-kurio-primary/70",
+                      ].join(" ")}
+                    />
+                  </button>
+                )
+              })}
             </div>
           </div>
 
-          {/* Arte */}
           <div
-            className="relative mx-auto aspect-square w-full max-w-[480px] overflow-hidden rounded-[22px] bg-kurio-card"
+            className="relative isolate mx-auto w-full max-w-[537px]"
             style={{
-              transform: `translateX(${Math.max(-32, Math.min(32, dragOffset * 0.2))}px)`,
+              transform: `translateX(${Math.max(
+                -32,
+                Math.min(32, dragOffset * 0.2)
+              )}px)`,
               transition: isDragging
                 ? "none"
                 : "transform 250ms ease",
             }}
           >
-            <MonkeyArtwork variant={activeSlide.artwork} />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -z-10"
+              style={{
+                inset: "-220px",
+                background:
+                  "radial-gradient(ellipse at center, rgba(219, 145, 82, 0.18) 0%, rgba(219, 145, 82, 0.10) 28%, rgba(219, 145, 82, 0.04) 48%, transparent 72%)",
+                filter: "blur(65px)",
+              }}
+            />
+
+            <div className="relative aspect-square w-full overflow-hidden rounded-[22px]">
+              <img
+                key={activeSlide.artwork}
+                src={activeSlide.artwork}
+                alt={`Arte em destaque: ${activeSlide.eyebrow}`}
+                className="h-full w-full object-cover"
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
 
@@ -204,8 +416,7 @@ export function HeroCarousel() {
           aria-live="polite"
           aria-atomic="true"
         >
-          Destaque {activeIndex + 1} de {heroSlides.length}:
-          {" "}
+          Destaque {activeIndex + 1} de {heroSlides.length}:{" "}
           {activeSlide.eyebrow}
         </p>
       </div>

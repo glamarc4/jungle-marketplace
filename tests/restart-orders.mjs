@@ -27,7 +27,7 @@ try {
   assert.equal(query.getQueryCache().getAll().length, 0)
   const recovered = await query.fetchQuery({ queryKey: ['recovered-order', expected.orderId], queryFn: () => ordersApi.get(expected.orderId) })
   assert.deepEqual(recovered, expected)
-  assert.deepEqual(await ordersApi.list(), [expected])
+  assert.deepEqual(await ordersApi.list(), [expected]);
   // Recovery performs GET only and does not write/recreate any order.
   assert.equal(localStorage.getItem('kurio:api:v1'), database)
   assert.equal((await cartApi.get()).items.length, 0)

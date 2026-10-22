@@ -42,12 +42,19 @@ export function ProfileSidebar({
   const logout = useAuth("logout")
 
   function handleLogout() {
-    logout.mutate({ email: "", password: "" }, { onSuccess: () => { void navigate({ to: "/" }) } })
+    logout.mutate(
+      { email: "", password: "" },
+      {
+        onSuccess: () => {
+          void navigate({ to: "/" })
+        },
+      },
+    )
   }
 
   return (
-    <aside className="w-full self-start bg-kurio-card font-mono lg:w-[280px] lg:shrink-0">
-      <h2 className="px-4 pb-2 pt-4 text-base font-bold">
+    <aside className="w-full self-start overflow-hidden rounded-xl border border-kurio-border bg-kurio-card font-mono lg:w-[280px] lg:shrink-0">
+      <h2 className="px-4 pb-2 pt-4 text-base font-bold text-foreground">
         Meu perfil
       </h2>
 
@@ -61,7 +68,7 @@ export function ProfileSidebar({
               key={item.to}
               to={item.to}
               aria-current={selected ? "page" : undefined}
-              className={`flex min-h-11 items-center gap-4 border-l-4 px-3 text-sm text-kurio-primary transition-colors hover:bg-kurio-raised ${
+              className={`flex min-h-11 items-center gap-4 border-l-4 px-3 font-mono text-sm text-kurio-primary transition-colors hover:bg-kurio-raised ${
                 selected
                   ? "border-kurio-primary bg-kurio-raised/40"
                   : "border-transparent"
@@ -73,27 +80,31 @@ export function ProfileSidebar({
           )
         })}
 
-        <Link to="/pedido/confirmacao" search={{}} className="flex min-h-11 items-center gap-4 px-4 text-sm text-kurio-primary/80">
+        <Link
+          to="/pedido/confirmacao"
+          search={{}}
+          className="flex min-h-11 items-center gap-4 px-4 font-mono text-sm text-kurio-primary/80"
+        >
           <ShoppingCart size={17} />
           Atividade
         </Link>
 
-        <div className="flex min-h-11 items-center gap-4 px-4 text-sm text-kurio-primary/80">
+        <div className="flex min-h-11 items-center gap-4 px-4 font-mono text-sm text-kurio-primary/80">
           <Heart size={17} />
           Lista de interesse
         </div>
 
-        <div className="flex min-h-11 items-center gap-4 px-4 text-sm text-kurio-primary/80">
+        <div className="flex min-h-11 items-center gap-4 px-4 font-mono text-sm text-kurio-primary/80">
           <Tag size={17} />
           Ofertas
         </div>
 
-        <div className="flex min-h-11 items-center gap-4 px-4 text-sm text-kurio-primary/80">
+        <div className="flex min-h-11 items-center gap-4 px-4 font-mono text-sm text-kurio-primary/80">
           <Download size={17} />
           Arquivos baixados
         </div>
 
-        <div className="flex min-h-11 items-center gap-4 px-4 text-sm text-kurio-primary/80">
+        <div className="flex min-h-11 items-center gap-4 px-4 font-mono text-sm text-kurio-primary/80">
           <CircleHelp size={17} />
           Suporte
         </div>
@@ -102,11 +113,12 @@ export function ProfileSidebar({
           type="button"
           onClick={handleLogout}
           disabled={logout.isPending}
-          className="flex min-h-11 w-full items-center gap-4 border-t border-kurio-border px-4 text-left text-sm font-bold text-kurio-primary hover:bg-kurio-raised"
+          className="flex min-h-11 w-full items-center gap-4 border-t border-kurio-border px-4 text-left font-mono text-sm font-bold text-kurio-primary hover:bg-kurio-raised disabled:cursor-not-allowed disabled:opacity-50"
         >
           <LogOut size={17} />
           Sair
         </button>
+
         <RequestState error={logout.error} />
       </nav>
     </aside>

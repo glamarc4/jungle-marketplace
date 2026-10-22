@@ -1,11 +1,12 @@
 import { http } from 'msw'
-import { account, hashPassword } from '../data/database'
+import { account, validSession, hashPassword } from '../data/database'
 import { validEmail } from '../../domain/validation'
 import { body, requireValue, respond } from './http'
 
 export const profileHandlers = [
-  http.get('/api/profile', () => respond(false, db => account(db).profile)),
+  http.get('/api/profile', () => respond(false, db => { requireValue(validSession(db), 'Sessão expirada. Entre novamente.', 401); return account(db).profile })),
   http.patch('/api/profile', ({ request }) => respond(true, async db => {
+    requireValue(validSession(db), 'Sessão expirada. Entre novamente.', 401)
     const input = await body(request)
     const profile = account(db).profile
     for (const key of Object.keys(profile) as (keyof typeof profile)[]) {

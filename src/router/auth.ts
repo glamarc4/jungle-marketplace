@@ -15,9 +15,11 @@ export function validateOrderSearch(
 export function validateAuthSearch(
   search: Record<string, unknown>,
 ): {
-  redirect?: '/checkout' | '/pedido/confirmacao'
+  redirect?: '/checkout' | '/pedido/confirmacao' | '/perfil' | '/carteiras'
   orderId?: string
 } {
+  if (search.redirect === '/perfil' || search.redirect === '/carteiras') return { redirect: search.redirect }
+
   if (search.redirect === '/checkout') {
     return { redirect: '/checkout' }
   }
@@ -35,6 +37,8 @@ export function validateAuthSearch(
 export function afterAuthDestination(
   search: ReturnType<typeof validateAuthSearch>,
 ) {
+  if (search.redirect === '/perfil' || search.redirect === '/carteiras') return { to: search.redirect }
+
   if (search.redirect === '/checkout') {
     return { to: '/checkout' as const }
   }
@@ -71,6 +75,8 @@ export async function requireCheckoutSession({
   queryClient.setQueryData(keys.session, session)
 
   if (!session) {
+    await queryClient.cancelQueries({ queryKey: ['account'] })
+    queryClient.removeQueries({ queryKey: ['account'] })
     throw redirect({
       to: '/entrar',
       search: validateAuthSearch({
